@@ -1,0 +1,52 @@
+{
+    "admin": {
+      "description": "游戏管理员，可强制结束游戏",
+      "type": "list",
+      "default": []
+    },
+    "maxWaitTime": {
+      "description": "创建游戏后，等待玩家2的最大时间(秒)",
+      "type": "int",
+      "default": 180
+    },
+    "gameTimeout": {
+      "description": "对局无操作自动结束时间(分钟)，0 表示关闭",
+      "type": "int",
+      "default": 60
+    },
+    "persistGames": {
+      "description": "是否在插件重启后恢复进行中的对局（保存于 data/plugin_data）",
+      "type": "bool",
+      "default": false
+    },
+    "startCoins": {
+      "description": "新玩家初始龙币",
+      "type": "int",
+      "default": 100
+    },
+    "winReward": {
+      "description": "胜场奖励龙币",
+      "type": "int",
+      "default": 30
+    },
+    "loseReward": {
+      "description": "参与安慰龙币",
+      "type": "int",
+      "default": 10
+    },
+    "streakBonus": {
+      "description": "每级连胜加成龙币（最多 5 级）",
+      "type": "int",
+      "default": 5
+    },
+    "dragonFee": {
+      "description": "屠龙模式入场费（龙币）",
+      "type": "int",
+      "default": 20
+    },
+    "dragonRewards": {
+      "description": "各 Boss 击杀奖励龙币（按 诺顿/芬里厄/伊邪那美/尼德霍格 顺序）",
+      "type": "list",
+      "default": [50, 80, 100, 150]
+    }
+  }
