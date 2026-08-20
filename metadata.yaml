@@ -1,5 +1,7 @@
-name: 龙族轮盘  # 插件的唯一识别名
-desc: 龙族轮盘   # 插件的简短描述
+name: astrbot_plugin_dragon_roulette
+display_name: 龙族轮盘
+short_desc: 以《龙族》为世界观的恶魔轮盘插件，支持 PvP、屠龙、组队讨伐。
+desc: 以《龙族》为世界观的 AstrBot 恶魔轮盘插件。卡塞尔学院地下赌局，混血种们以言灵代替道具互相博弈，支持 PvP 对战、龙币押注、屠龙 PvE 与多人组队讨伐。
 help: |
   以《龙族》为世界观的 AstrBot 恶魔轮盘插件。卡塞尔学院地下赌局，混血种们以言灵代替道具互相博弈。
 
@@ -74,6 +76,24 @@ help: |
     - startCoins / winReward / loseReward / streakBonus：龙币经济参数
     - dragonFee / dragonRewards：屠龙模式入场费与击杀奖励
 
-version: v1.10.0 # 插件版本号。格式：v1.1.1 或者 v1.1
-author: 衔红花的鸟 # 作者
-repo: "" # 插件的仓库地址（可留空）
+version: 1.10.0
+author: 衔红花的鸟
+repo: https://github.com/WEONM/astrbot-dragon
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp
+  - qq_official
+  - telegram
+  - wecom
+  - lark
+  - dingtalk
+  - discord
+  - slack
+  - kook
+social_link: https://github.com/WEONM
+tags:
+  - 游戏
+  - PvP
+  - PvE
+  - 龙族
+  - 轮盘

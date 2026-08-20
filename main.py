@@ -102,10 +102,11 @@ def other_player(player_key: str) -> str:
     return "player2" if player_key == "player1" else "player1"
 
 @register(
-    "龙族轮盘",         # 插件唯一识别名（显示为“龙族轮盘”）
-    "衔红花的鸟",       # 作者
-    "龙族轮盘",          # 简短描述
-    "1.10.0"            # 版本号
+    "astrbot_plugin_dragon_roulette",  # 插件唯一识别名
+    "衔红花的鸟",                       # 作者
+    "龙族轮盘",                          # 简短描述
+    "1.10.0",                           # 版本号
+    "https://github.com/WEONM/astrbot-dragon"  # 仓库地址
 )
 class DragonRoulette(Star):
     """
