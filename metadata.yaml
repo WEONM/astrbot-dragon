@@ -76,7 +76,7 @@ help: |
     - startCoins / winReward / loseReward / streakBonus：龙币经济参数
     - dragonFee / dragonRewards：屠龙模式入场费与击杀奖励
 
-version: 1.10.0
+version: 1.11.0
 author: 衔红花的鸟
 repo: https://github.com/WEONM/astrbot-dragon
 astrbot_version: ">=4.16,<5"
