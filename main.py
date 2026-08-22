@@ -105,7 +105,7 @@ def other_player(player_key: str) -> str:
     "astrbot_plugin_dragon_roulette",  # 插件唯一识别名
     "衔红花的鸟",                       # 作者
     "龙族轮盘",                          # 简短描述
-    "1.11.0",                           # 版本号
+    "1.12.0",                           # 版本号
     "https://github.com/WEONM/astrbot-dragon"  # 仓库地址
 )
 class DragonRoulette(Star):
@@ -492,7 +492,7 @@ class DragonRoulette(Star):
         """龙族轮盘游戏主指令组"""
         pass
 
-    @dragon_roulette.command("规则", alias={"帮助"})
+    @dragon_roulette.command("规则", alias={"帮助", "新手", "玩法"})
     async def show_rules(self, event: AstrMessageEvent):
         """查看简化版游戏规则。"""
         yield event.plain_result(textwrap.dedent("""\
@@ -522,6 +522,32 @@ class DragonRoulette(Star):
               组队讨伐：/龙轮 组队屠龙 诺顿 → /龙轮 组队加入 诺顿 → /龙轮 组队开始。
               击败 Boss 得 50~150 龙币；尼德霍格需先击败前三龙王解锁。
             指令简称：/龙轮 创建、/龙轮 加入、/龙轮 开始……
+        """))
+
+    @dragon_roulette.command("指令", alias={"菜单", "命令"})
+    async def show_commands(self, event: AstrMessageEvent):
+        """查看最短上手指令菜单。"""
+        yield event.plain_result(textwrap.dedent("""\
+            ══ 🐉 龙族轮盘 · 指令速查 ══
+            【一局 PvP】
+              /龙轮 创建 → /龙轮 加入 → /龙轮 开始
+            【回合行动】
+              开枪/对方：攻击对方
+              吞枪/自己：向自己开枪，空包弹可继续行动
+              抽：扣血抽取随机言灵
+              言灵名：直接咏唱背包中的言灵
+            【常用查询】
+              /龙轮 信息：血量 / 弹夹 / 当前回合
+              /龙轮 图鉴：查看言灵效果
+              /龙轮 规则：完整玩法说明
+              /龙轮 战绩 / 排行：龙币与胜场
+            【屠龙 PvE】
+              /龙轮 屠龙 列表：查看龙王
+              /龙轮 屠龙 Boss名：单人挑战
+              /龙轮 组队屠龙 Boss名 → 组队加入 → 组队开始
+            【紧急操作】
+              认输：当前玩家投降
+              /龙轮 结束：作废本局
         """))
 
     @dragon_roulette.command("模式", alias={"选模式"})
@@ -570,6 +596,7 @@ class DragonRoulette(Star):
                 玩家2：正在等待中……
 
                 请发送“/龙轮 加入”加入本游戏，超时后将自动取消！
+                📖 新手可先发送“/龙轮 规则”或“/龙轮 指令”快速上手。
             """))
         else:
             status = self.games[cid].get("status", "")
@@ -623,6 +650,7 @@ class DragonRoulette(Star):
             玩家2：{event.get_sender_name()} ({event.get_sender_id()})
 
             请由玩家1发送“/龙轮 开始”以唤醒言灵，正式开始对战！
+            📖 开局前可用“/龙轮 模式 标准/极速/血牛/言灵乱斗/皇帝降临”选择玩法。
         """))
 
     def get_mode_config(self, mode: str) -> dict:
@@ -700,6 +728,7 @@ class DragonRoulette(Star):
             🔫 炼金手枪已装填 {len(bullet_list)} 发弹：
             🔥 龙炎弹 {live_count} 发 ｜ 💨 空包弹 {blank_count} 发
 
+            ⌨️ 行动速记：开枪/对方 ｜ 吞枪/自己 ｜ 抽 ｜ 言灵名
             回合内可发送“抽”消耗生命补充言灵。
             请发送“/龙轮 信息”查看详细情况，祝你好运！
         """))
@@ -880,6 +909,7 @@ class DragonRoulette(Star):
 
         rarity_icon = RARITY_ICONS.get(rarity, "◆")
         max_hp = self.get_mode_config(g.get("mode", "标准"))["hp"]
+        next_cost = DRAW_BASE_COST * (DRAW_COST_MULTIPLIER ** g[cur_p]["drawCount"])
         if os.path.exists(res_path("draw_card.png")):
             yield event.image_result(res_path("draw_card.png"))
         yield event.plain_result(textwrap.dedent(f"""\
@@ -887,7 +917,7 @@ class DragonRoulette(Star):
             你割破手腕，以 {cost} 点生命为代价，让龙血在虚空中沸腾……
             新的言灵印记浮现：【{new_item}】（{rarity_icon} {rarity}）！
             当前生命：{g[cur_p]["hp"]}/{max_hp}
-            保底进度：稀有 {g[cur_p]["pity"]}/4 ｜ 传说 {g[cur_p]["legendPity"]}/8
+            下次抽卡：{next_cost} 点生命 ｜ 保底进度：稀有 {g[cur_p]["pity"]}/4 ｜ 传说 {g[cur_p]["legendPity"]}/8
         """))
 
     @dragon_roulette.command("结束游戏", alias={"结束", "散"})
@@ -1679,6 +1709,7 @@ class DragonRoulette(Star):
         if game[cur_p].get("timeZero", False):
             game[cur_p]["timeZero"] = False
 
+        text += "\n\n" + self._compact_status(game)
         yield event.plain_result(text)
         game["double"] = False
         game[cur_p]["powerUp"] = 0  # 怒焰：无论是否打出实弹，本回合强化消耗
@@ -1781,7 +1812,7 @@ class DragonRoulette(Star):
             yield event.plain_result(ln)
         self._touch(cid)
         if cid in self.games:
-            yield event.plain_result(f"【{item}】的力量渐渐沉寂，但它的传说已刻入你的血脉。")
+            yield event.plain_result(f"【{item}】的力量渐渐沉寂，但它的传说已刻入你的血脉。\n{self._compact_status(game)}")
 
     # ================= 攻击系言灵 =================
     @staticmethod
@@ -2518,21 +2549,48 @@ class DragonRoulette(Star):
         屠龙局走独立结算（奖励/击杀数，无押注）。
         """
         g = self.games[cid]
+        mode = g.get("mode", "标准")
+        round_no = max(1, int(g.get("round", 1)))
         if g.get("boss"):
             human_win = winner == "player1"
+            boss_name = g.get("boss", "龙王")
+            boss_hp = g["player2"].get("hp", 0)
+            boss_max = g.get("bossMaxHp", self.get_mode_config(mode)["hp"])
+            if g.get("team_hunt"):
+                team_names = "、".join(m.get("name", "?") for m in g.get("team_members", []))
+                human_line = f"👥 讨伐队：{team_names if team_names else '全灭'}"
+            else:
+                human_line = f"❤ 挑战者：{g['player1'].get('name', '?')} {max(0, g['player1'].get('hp', 0))}/{self.get_mode_config(mode)['hp']}"
+            result_text = (
+                "龙王庞大的身躯轰然倒地，你完成了屠龙的壮举！"
+                if human_win
+                else f"你的龙血燃尽了……{g['player2']['name']} 的领域重归沉寂。"
+            )
             text = textwrap.dedent(f"""\
                 ══ 🐉 龙族轮盘 · 屠龙 ══
-                {('龙王庞大的身躯轰然倒地，你完成了屠龙的壮举！' if human_win else f'你的龙血燃尽了……{g["player2"]["name"]} 的领域重归沉寂。')}
+                {result_text}
+                🧾 战报：{mode} ｜ 第 {round_no} 轮 ｜ 🐲 {boss_name} 剩余 {max(0, boss_hp)}/{boss_max}
+                {human_line}
             """)
             settle_lines = self._settle_boss(cid, human_win)
             del self.games[cid]
             return [text] + settle_lines
         winner_name = g[winner]["name"]
         loser_name = g[loser]["name"]
+        winner_hp = max(0, g[winner].get("hp", 0))
+        loser_hp = max(0, g[loser].get("hp", 0))
+        max_hp = self.get_mode_config(mode)["hp"]
+        winner_items = len(g[winner].get("items", []))
+        loser_items = len(g[loser].get("items", []))
         text = textwrap.dedent(f"""\
             ══ 🐉 龙族轮盘 ══
             {self.at_id(loser_name)} 的龙血燃尽了……
             {self.at_id(winner_name)} 以龙血之名获得了最终胜利！
+
+            🧾 战报：{mode} ｜ 第 {round_no} 轮
+            ❤ 最终生命：{winner_name} {winner_hp}/{max_hp} ｜ {loser_name} {loser_hp}/{max_hp}
+            🎴 剩余言灵：{winner_name} {winner_items} 张 ｜ {loser_name} {loser_items} 张
+
             卡塞尔学院地下赌局正式结束，期待下次再战！
         """)
         settle_lines = self._settle(cid, winner, loser)
@@ -2598,6 +2656,41 @@ class DragonRoulette(Star):
         """标记该对局有活动，用于无操作超时判定。"""
         if cid in self.games:
             self.games[cid]["last_activity"] = time.time()
+
+    def _compact_status(self, g: dict) -> str:
+        """生成一行/两行的紧凑战况摘要，便于每次行动后快速读盘。"""
+        bullets = g.get("bullet", [])
+        live = self.count_bullet(bullets, BULLET_LIVE)
+        blank = len(bullets) - live
+        cur_p = f"player{g.get('currentTurn', 1)}"
+        mode_cfg = self.get_mode_config(g.get("mode", "标准"))
+        bullet_text = f"🔫 弹夹 {len(bullets)} 发（🔥{live}/💨{blank}）"
+        turn_text = f"🎯 行动：{g.get(cur_p, {}).get('name', '未知')}"
+
+        if g.get("team_hunt"):
+            members = g.get("team_members", [])
+            cur_id = g.get(cur_p, {}).get("id")
+            member_parts = []
+            for idx, m in enumerate(members[:6], 1):
+                mark = "▶" if m.get("id") == cur_id else f"{idx}."
+                member_parts.append(f"{mark}{m.get('name', '?')}❤{m.get('hp', 0)}")
+            if len(members) > 6:
+                member_parts.append(f"…共{len(members)}人")
+            boss = g.get("player2", {})
+            boss_max = g.get("bossMaxHp", mode_cfg["hp"])
+            team_text = " ".join(member_parts) if member_parts else "无存活队员"
+            return f"📊 {turn_text} ｜ 👥 {team_text} ｜ 🐲 {boss.get('name', 'Boss')}❤{boss.get('hp', 0)}/{boss_max} ｜ {bullet_text}"
+
+        p1 = g.get("player1", {})
+        p2 = g.get("player2", {})
+        p1_max = mode_cfg["hp"]
+        p2_max = g.get("bossMaxHp", p1_max)
+        return (
+            f"📊 {turn_text} ｜ "
+            f"❤ {p1.get('name', '玩家1')} {p1.get('hp', 0)}/{p1_max} ："
+            f"{p2.get('name', '玩家2')} {p2.get('hp', 0)}/{p2_max} ｜ "
+            f"{bullet_text}"
+        )
 
     async def _private_send(self, event, text: str) -> bool:
         """

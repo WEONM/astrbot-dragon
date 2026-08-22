@@ -6,6 +6,7 @@ help: |
   以《龙族》为世界观的 AstrBot 恶魔轮盘插件。卡塞尔学院地下赌局，混血种们以言灵代替道具互相博弈。
 
   指令统一使用短指令：
+    - /龙轮 规则 / 指令
     - /龙轮 创建
     - /龙轮 加入
     - /龙轮 模式 标准/极速/血牛/言灵乱斗/皇帝降临
@@ -76,7 +77,7 @@ help: |
     - startCoins / winReward / loseReward / streakBonus：龙币经济参数
     - dragonFee / dragonRewards：屠龙模式入场费与击杀奖励
 
-version: 1.11.0
+version: 1.12.0
 author: 衔红花的鸟
 repo: https://github.com/WEONM/astrbot-dragon
 astrbot_version: ">=4.16,<5"
